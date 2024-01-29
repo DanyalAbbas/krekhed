@@ -1,7 +1,10 @@
 import pygame
 import math
+import sys
 
 pygame.init()
+
+BLACK = (0,0,0)
 
 class Krekhead():
     def __init__(self):
@@ -24,6 +27,29 @@ class Krekhead():
                 return False
         return True
     
+    def create_button(self, x, y, width, height, def_color, hover_color,text, text_color, action = False):
+
+        font  = pygame.font.Font("Slowdex.ttf", 25)
+        button_rect = pygame.Rect(x,y,width,height)
+        button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else def_color
+
+        pygame.draw.rect(win, button_color, button_rect)
+        pygame.draw.rect(win, BLACK, button_rect, 2 )
+
+        button_text = font.render(text, True, text_color)
+        text_rect = button_text.get_rect(center= button_rect.center)
+        win.blit(button_text, text_rect)
+
+        if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            action()
+
+def start():
+    global nigga
+    nigga = True
+    return nigga
+
+
+
 class Krek():
     def __init__(self,main_x,main_y,x,y):
 
@@ -83,54 +109,63 @@ isJump = False
 jump_height = 20
 jump_velocity = jump_height
 gravity = 2
+nigga = False
+
 
 
 
 while run:
-    clock.tick(FPS)
-    for i in range(0,tiles):
-        win.blit(background, (i * bg_width + scroll ,0))
-        win.blit(img_small, (300, 100))
+    if nigga:
+        clock.tick(FPS)
+        for i in range(0,tiles):
+            win.blit(background, (i * bg_width + scroll ,0))
+            win.blit(img_small, (300, 100))
 
-    # scroll background
-    scroll -= 5
+        # scroll background
+        scroll -= 5
 
-    # reset scroll
-    if abs(scroll) > bg_width:
-        scroll = 0
+        # reset scroll
+        if abs(scroll) > bg_width:
+            scroll = 0
 
-    win.blit(text, (krek.window_width-450, krek.window_height - 400))
-    for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
+        win.blit(text, (krek.window_width-450, krek.window_height - 400))
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
 
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    move_left = True
-                elif event.key == pygame.K_RIGHT:
-                    move_right = True
-                elif event.key == pygame.K_SPACE:
-                    isJump = True
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        move_left = True
+                    elif event.key == pygame.K_RIGHT:
+                        move_right = True
+                    elif event.key == pygame.K_SPACE:
+                        isJump = True
 
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    move_left = False
-                elif event.key == pygame.K_RIGHT:
-                    move_right = False
-                elif event.key == pygame.K_SPACE:
-                    pass
-                
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT:
+                        move_left = False
+                    elif event.key == pygame.K_RIGHT:
+                        move_right = False
+                    elif event.key == pygame.K_SPACE:
+                        pass
+                    
 
 
-    if move_left:
-        player.move(-steps,0)
-    elif move_right:
-        player.move(steps,0)
-    if isJump:
-        player.jump(gravity)
-    
+        if move_left:
+            player.move(-steps,0)
+        elif move_right:
+            player.move(steps,0)
+        if isJump:
+            player.jump(gravity)
+        
 
-    player.draw(win)
+        player.draw(win)
+    else:
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+        win.fill((0,0,0))
+        krek.create_button(100,100,50,50, (0,255,0), (255,0,0), "Hello", BLACK,  start)
 
 
 
