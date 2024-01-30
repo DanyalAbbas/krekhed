@@ -57,40 +57,85 @@
 
 
 
+# import pygame
+# import sys
+
+# pygame.init()
+
+# BLACK, WHITE, GRAY, HOVER_COLOR = (0, 0, 0), (255, 255, 255), (0, 255, 0), (255, 0, 0)
+# screen_width, screen_height = 400, 300
+# screen = pygame.display.set_mode((screen_width, screen_height))
+# font = pygame.font.Font("Slowdex.ttf", 25)
+
+# def create_button(x, y, width, height, text, default_color, hover_color, text_color, action):
+#     button_rect = pygame.Rect(x, y, width, height)
+#     button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else default_color
+
+#     pygame.draw.rect(screen, button_color, button_rect)
+#     pygame.draw.rect(screen, BLACK, button_rect, 2)
+
+#     button_text = font.render(text, True, text_color)
+#     text_rect = button_text.get_rect(center=button_rect.center)
+#     screen.blit(button_text, text_rect)
+
+#     if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+#         action()
+
+# while True:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             pygame.quit()
+#             sys.exit()
+
+#     screen.fill(WHITE)
+#     create_button(50, 50, 100, 50, "Start", GRAY, HOVER_COLOR, BLACK, lambda: print("Game started!"))
+#     create_button(150, 50, 100, 50, "Options", GRAY, HOVER_COLOR, BLACK, lambda: print("Options menu!"))
+#     create_button(250, 50, 100, 50, "Quit", GRAY, HOVER_COLOR, BLACK, lambda: sys.exit())
+
+#     pygame.display.flip()
+
+
 import pygame
-import sys
+import webbrowser
 
 pygame.init()
 
-BLACK, WHITE, GRAY, HOVER_COLOR = (0, 0, 0), (255, 255, 255), (0, 255, 0), (255, 0, 0)
-screen_width, screen_height = 400, 300
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+# Initialize Pygame window
+screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-font = pygame.font.Font("Slowdex.ttf", 25)
+pygame.display.set_caption("Clickable Link")
 
-def create_button(x, y, width, height, text, default_color, hover_color, text_color, action):
-    button_rect = pygame.Rect(x, y, width, height)
-    button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else default_color
+# Define font and text
+font = pygame.font.Font(None, 36)
+text = font.render("Click here to open GitHub", True, BLACK)
+text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
 
-    pygame.draw.rect(screen, button_color, button_rect)
-    pygame.draw.rect(screen, BLACK, button_rect, 2)
-
-    button_text = font.render(text, True, text_color)
-    text_rect = button_text.get_rect(center=button_rect.center)
-    screen.blit(button_text, text_rect)
-
-    if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
-        action()
-
-while True:
+# Main game loop
+running = True
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if text_rect.collidepoint(event.pos):
+                # Open the URL in a web browser when clicked
+                webbrowser.open("https://github.com/DanyalAbbas")
 
+    # Clear the screen
     screen.fill(WHITE)
-    create_button(50, 50, 100, 50, "Start", GRAY, HOVER_COLOR, BLACK, lambda: print("Game started!"))
-    create_button(150, 50, 100, 50, "Options", GRAY, HOVER_COLOR, BLACK, lambda: print("Options menu!"))
-    create_button(250, 50, 100, 50, "Quit", GRAY, HOVER_COLOR, BLACK, lambda: sys.exit())
 
+    # Draw the text
+    screen.blit(text, text_rect.topleft)
+
+    # Update the display
     pygame.display.flip()
+
+# Quit Pygame
+pygame.quit()
+
+
 

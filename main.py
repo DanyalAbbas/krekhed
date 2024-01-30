@@ -1,6 +1,8 @@
 import pygame
 import math
 import sys
+import webbrowser
+
 
 pygame.init()
 
@@ -29,7 +31,7 @@ class Krekhead():
     
     def create_button(self, x, y, width, height, def_color, hover_color,text, text_color, action = False):
 
-        font  = pygame.font.Font("Slowdex.ttf", 25)
+        font  = pygame.font.Font("Slowdex.ttf", 35)
         button_rect = pygame.Rect(x,y,width,height)
         button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else def_color
 
@@ -42,11 +44,6 @@ class Krekhead():
 
         if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
             action()
-
-def start():
-    global nigga
-    nigga = True
-    return nigga
 
 
 
@@ -82,6 +79,13 @@ class Krek():
             isJump = False
             jump_velocity = jump_height
 
+# DIFFERENT SCREENS
+
+def start():
+    global gameplay
+    gameplay = True
+    return gameplay
+
 
 krek = Krekhead()
 win = krek.initialize()
@@ -92,6 +96,8 @@ tiles = math.ceil((krek.window_width / bg_width)) + 1
 scroll = 0
 
 img = pygame.image.load("ghost.png")
+credit_img = pygame.image.load("credits.png")
+credit_rect = pygame.Rect(-3,-40, 120, 90)
 img_small = pygame.transform.scale(img, (50,50))
 
 clock  = pygame.time.Clock()
@@ -99,7 +105,8 @@ FPS = 60
 
 player = Krek(krek.main_x,krek.main_y,250,550)
 
-font = pygame.font.Font('freesansbold.ttf', 32)
+font = pygame.font.Font('freesansbold.ttf', 25)
+font2 = pygame.font.Font("Minecraft.ttf", 170)
 text = font.render('Test 1', True, (0, 255, 0), (0, 0, 128))
 run = True
 move_left = False
@@ -109,13 +116,16 @@ isJump = False
 jump_height = 20
 jump_velocity = jump_height
 gravity = 2
-nigga = False
+
+
+
+gameplay  = False
 
 
 
 
 while run:
-    if nigga:
+    if gameplay:
         clock.tick(FPS)
         for i in range(0,tiles):
             win.blit(background, (i * bg_width + scroll ,0))
@@ -161,13 +171,22 @@ while run:
 
         player.draw(win)
     else:
+
+        win.fill((0,0,0))
+        pygame.draw.rect(win, (0,0,0), credit_rect)
+        win.blit(pygame.transform.scale(credit_img, (150,150)), (-3,-40))
+        win.blit(font2.render("KREKHED", True, (255,255,255)), (300,175))
+        krek.create_button(400,375,200,100, (0,255,0), (255,0,0), "Play", BLACK,  start)
+        krek.create_button(600,375,200,100, (0,255,0), (255,0,0), "Options", BLACK,  lambda: 5+1)
+        krek.create_button(800,375,200,100, (0,255,0), (255,0,0), "Quit", BLACK,  lambda: sys.exit())
+        
+        
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-        win.fill((0,0,0))
-        krek.create_button(100,100,50,50, (0,255,0), (255,0,0), "Hello", BLACK,  start)
-
-
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if credit_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed:
+                        webbrowser.open("https://github.com/DanyalAbbas")
 
     pygame.display.flip()
 
