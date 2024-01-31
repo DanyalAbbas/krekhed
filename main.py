@@ -83,6 +83,8 @@ class Krek():
         self.width = 50
         self.height = 50
         self.color = (255,255,0)
+        self.jump_height = 20
+        self.jump_velocity = self.jump_height
 
 
     def create_character(self):
@@ -99,13 +101,13 @@ class Krek():
         self.x += x
         self.y += y
     
-    def jump(self,gravity):  
-        global isJump, jump_velocity, jump_height
-        player.y -= jump_velocity
-        jump_velocity -= gravity
-        if abs(jump_velocity) > jump_height:
+    def jump(self,gravity):
+        global isJump
+        player.y -= self.jump_velocity
+        self.jump_velocity -= gravity
+        if abs(self.jump_velocity) > self.jump_height:
             isJump = False
-            jump_velocity = jump_height
+            self.jump_velocity = self.jump_height
 
 # DIFFERENT SCREENS
 
@@ -133,9 +135,6 @@ move_left = False
 move_right = False
 steps = 6
 isJump = False
-jump_height = 20
-jump_velocity = jump_height
-gravity = 2
 
 
 
@@ -178,7 +177,7 @@ while run:
         elif move_right and player.x < krek.window_width-60:
             player.move(steps,0)
         if isJump:
-            player.jump(gravity)
+            player.jump(gravity = 2)
         
 
         player.draw(win)
