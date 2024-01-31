@@ -95,47 +95,53 @@
 #     pygame.display.flip()
 
 
+# import pygame
+# import webbrowser
+
+# pygame.init()
+
+# # Define colors
+# WHITE = (255, 255, 255)
+# BLACK = (0, 0, 0)
+
+# # Initialize Pygame window
+# screen_width, screen_height = 800, 600
+# screen = pygame.display.set_mode((screen_width, screen_height))
+# pygame.display.set_caption("Clickable Link")
+
+# # Define font and text
+# font = pygame.font.Font(None, 36)
+# text = font.render("Click here to open GitHub", True, BLACK)
+# text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
+
+# # Main game loop
+# running = True
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#         elif event.type == pygame.MOUSEBUTTONDOWN:
+#             if text_rect.collidepoint(event.pos):
+#                 # Open the URL in a web browser when clicked
+#                 webbrowser.open("https://github.com/DanyalAbbas")
+
+#     # Clear the screen
+#     screen.fill(WHITE)
+
+#     # Draw the text
+#     screen.blit(text, text_rect.topleft)
+
+#     # Update the display
+#     pygame.display.flip()
+
+# # Quit Pygame
+# pygame.quit()
+
 import pygame
-import webbrowser
 
-pygame.init()
+win = pygame.display.set_mode((500,500))
+background  = pygame.image.load("bg.png").convert()
+bg_width = background.get_width()
 
-# Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-
-# Initialize Pygame window
-screen_width, screen_height = 800, 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Clickable Link")
-
-# Define font and text
-font = pygame.font.Font(None, 36)
-text = font.render("Click here to open GitHub", True, BLACK)
-text_rect = text.get_rect(center=(screen_width // 2, screen_height // 2))
-
-# Main game loop
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if text_rect.collidepoint(event.pos):
-                # Open the URL in a web browser when clicked
-                webbrowser.open("https://github.com/DanyalAbbas")
-
-    # Clear the screen
-    screen.fill(WHITE)
-
-    # Draw the text
-    screen.blit(text, text_rect.topleft)
-
-    # Update the display
-    pygame.display.flip()
-
-# Quit Pygame
-pygame.quit()
-
-
+print(bg_width)
 
