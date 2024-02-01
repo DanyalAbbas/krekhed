@@ -20,6 +20,7 @@ class Krekhead():
         self.credit_img = pygame.image.load("credits.png")
         self.credit_rect = pygame.Rect(-3,-40, 120, 90)
         self.img_small = pygame.transform.scale(self.img, (50,50))
+        self.scroll = 0
         
 
     def initialize(self):
@@ -54,13 +55,12 @@ class Krekhead():
         background  = pygame.image.load("bg.png").convert()
         bg_width = background.get_width()
         tiles = math.ceil((self.window_width / bg_width)) + 1
-        global scroll
 
         for i in range(0,tiles):
-            win.blit(background , (i * bg_width + scroll, 0))
-        scroll -= 5
-        if abs(scroll) > bg_width:
-            scroll = 0
+            win.blit(background , (i * bg_width + self.scroll, 0))
+        self.scroll -= 5
+        if abs(self.scroll) > bg_width:
+            self.scroll = 0
     
     def text_render(self, font, size, text, color, bg_color = None):
         f = pygame.font.Font(font, size)
@@ -85,6 +85,10 @@ class Krek():
         self.color = (255,255,0)
         self.jump_height = 20
         self.jump_velocity = self.jump_height
+        self.move_left = False
+        self.move_right = False
+        self.isJump = False
+        self.steps = 6
 
 
     def create_character(self):
@@ -102,11 +106,10 @@ class Krek():
         self.y += y
     
     def jump(self,gravity):
-        global isJump
         player.y -= self.jump_velocity
         self.jump_velocity -= gravity
         if abs(self.jump_velocity) > self.jump_height:
-            isJump = False
+            self.isJump = False
             self.jump_velocity = self.jump_height
 
 # DIFFERENT SCREENS
@@ -118,23 +121,12 @@ def start():
 
 
 krek = Krekhead()
+player = Krek(krek.main_x,krek.main_y,250,550)
 win = krek.initialize()
-
-scroll = 0
-
-
-
 clock  = pygame.time.Clock()
 FPS = 60
-
-player = Krek(krek.main_x,krek.main_y,250,550)
-
-
 run = True
-move_left = False
-move_right = False
-steps = 6
-isJump = False
+
 
 
 
@@ -156,27 +148,27 @@ while run:
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_LEFT:
-                        move_left = True
+                        player.move_left = True
                     elif event.key == pygame.K_RIGHT:
-                        move_right = True
+                        player.move_right = True
                     elif event.key == pygame.K_SPACE:
-                        isJump = True
+                        player.isJump = True
 
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
-                        move_left = False
+                        player.move_left = False
                     elif event.key == pygame.K_RIGHT:
-                        move_right = False
+                        player.move_right = False
                     elif event.key == pygame.K_SPACE:
                         pass
                     
 
 
-        if move_left and player.x > 10:
-            player.move(-steps,0)
-        elif move_right and player.x < krek.window_width-60:
-            player.move(steps,0)
-        if isJump:
+        if player.move_left and player.x > 10:
+            player.move(-player.steps,0)
+        elif player.move_right and player.x < krek.window_width-60:
+            player.move(player.steps,0)
+        if player.isJump:
             player.jump(gravity = 2)
         
 
