@@ -1,16 +1,28 @@
-import pygame
-import math
-import sys
-import webbrowser
-import random
-from pygame import mixer
+# Name : Danyal Abbas
+# Roll no : N/A
+# Email: gamingindustry9@gmail.com
+# ----------------------------------- # 
+
+# Importing different libraries we will need
+
+import pygame # For the main GUI based program 
+import math # For Collision management by using distance formula
+import sys # For exiting the program
+import webbrowser # To open any link in the browser
+import random # For randomly generating the enemies
+from pygame import mixer # For music and sound effects
+
 
 BLACK = (0, 0, 0)
+
+# Initializing the pygame and mixer library
 pygame.init()
 mixer.init()
 
+# making a Class for the window and different things related to it 
 class Krekhead():
     def __init__(self):
+        # initializing values of width, height, caption, images of window
         self.main_x = 0
         self.main_y = 0
         self.window_width = 1400
@@ -24,18 +36,14 @@ class Krekhead():
         self.obstacle_cactus = pygame.image.load("Assets/cactus.png")
         self.scroll = 0
 
+    # Implementing the values and giving the window its width, height, image and icon
     def initialize(self):
         win = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption(self.caption)
         pygame.display.set_icon(pygame.image.load("Assets/ghost.png"))
         return win
 
-    def check_for_close(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-        return True
-
+    # Creating a method for button, as we will be adding a lot of  buttons in the game
     def create_button(self, x, y, width, height, def_color,textfont, hover_color, text, text_color, action=False):
         font = pygame.font.Font(textfont, 35)
         button_rect = pygame.Rect(x, y, width, height)
@@ -67,40 +75,51 @@ class Krekhead():
         write = f.render(text, True, color, bg_color)
         return write
 
-
+# Making another Class for the different screens in the game (Gameloop, Main Menu, Death screen, etc)
 class Screens():
     def __init__(self):
         self.main_menu = True
         self.gameplay = False
         self.died = False
         self.options = False
-    
-    def loop_thingey(self):
+        self.died_music = mixer.Sound("Assets/game_over.wav")
+
+    # Different button functions that will be called when certain buttons are pressed
+    def start_btn_func(self):
+        screen.gameplay = True
+        return screen.gameplay
+    def menu_btn_func(self):
+        screen.main_menu = True
+        return screen.main_menu
+    def restart_btn_func(self):
+        player.score = 0
+        player.x = 250
+        player.move_right = False
+        player.move_right = False
+        player.isJump = False
+        player.obstacles.clear()
+        screen.gameplay = True   
+        return screen.gameplay
+      
+
+    def DiedScreen(self):
+        win.fill((0, 0, 0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-
-
-    def DiedScreen(self):
-        mixer.Sound("Assets/game_over.wav")
-        mixer.music.play()
-        win.fill((0, 0, 0))
-        self.loop_thingey()
         
         win.blit(krek.text_render("Assets/Minecraft.ttf", 100, "YOU DIED", (255,255,255)), (450, 150))
         win.blit(krek.text_render("Assets/Slowdex.ttf", 50, f"Score : {player.score}", (255,255,255)), (585, 250))
-        krek.create_button(465, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Restart", (0,0,0), restart)
+        krek.create_button(465, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Restart", (0,0,0), self.restart_btn_func)
         krek.create_button(715, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Quit", (0,0,0), lambda : sys.exit())
-        krek.create_button(568, 415, 300, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Main Menu", (0,0,0),  menu)
+        krek.create_button(568, 415, 300, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Main Menu", (0,0,0),  self.menu_btn_func)
 
     def MainMenu(self):
-        mixer.music.load('Assets/bg_music.mp3')
-        mixer.music.play(1)
         win.fill((0, 0, 0))
         pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
         win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
         win.blit(krek.text_render("Assets/Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
-        krek.create_button(400, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, start)
+        krek.create_button(400, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, self.start_btn_func)
         krek.create_button(600, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, lambda: 5 + 1)
         krek.create_button(800, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Quit", BLACK, lambda: sys.exit())
 
@@ -149,6 +168,7 @@ class Screens():
         if collision:
             screen.gameplay = False
             screen.main_menu = False
+            screen.died_music.play()
             screen.died = True
 
         if player.move_left and player.x > 10:
@@ -165,7 +185,7 @@ class Screens():
 
         player.obstacles = [obstacle for obstacle in player.obstacles if obstacle.x > -40]
 
-
+# Making a Class for the player and enemy and everything to do with their movements, bliting, creation etc
 class Krek():
     def __init__(self, main_x, main_y, x, y):
         self.x = x + main_x
@@ -226,28 +246,9 @@ class Krek():
 
 # DIFFERENT SCREENS
 
-def start():
-    screen.gameplay = True
-    return screen.gameplay
-
-def menu():
-    screen.main_menu = True
-    return screen.main_menu
-
-def restart():
-    player.score = 0
-    player.x = 250
-    player.move_right = False
-    player.move_right = False
-    player.isJump = False
-    player.obstacles.clear()
-    screen.gameplay = True
-    
-    return screen.gameplay
 
 
-
-
+# Creating instances for the different Classes
 krek = Krekhead()
 player = Krek(krek.main_x, krek.main_y, 250, 550)
 screen = Screens()
@@ -255,20 +256,21 @@ win = krek.initialize()
 clock = pygame.time.Clock()
 FPS = 60
 
-
+# The Main window loop for the program to keep running
 run = True
 while run:
     if screen.gameplay:
         screen.GameLoop()
-        
-
     elif screen.main_menu:
-        screen.MainMenu()
-        
+        screen.MainMenu()  
     elif screen.died:
         screen.DiedScreen()
 
-    pygame.display.flip()
+    """ for updating the screen after one iteration so that the
+        changes that occur in the iteration are shown on the screen
+    """
+    pygame.display.flip()  
 
-
+""" for closing the program when all the tasks are done, and all the conditions
+    are met."""
 pygame.quit()
