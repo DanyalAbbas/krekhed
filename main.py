@@ -7,7 +7,7 @@ from pygame import mixer
 
 BLACK = (0, 0, 0)
 pygame.init()
-
+mixer.init()
 
 class Krekhead():
     def __init__(self):
@@ -16,18 +16,18 @@ class Krekhead():
         self.window_width = 1400
         self.window_height = 600
         self.caption = "KREKHED"
-        self.img = pygame.image.load("ghost.png")
-        self.sun = pygame.transform.scale(pygame.image.load("sun.png"), (100, 100))
-        self.credit_img = pygame.image.load("credits.png")
+        self.img = pygame.image.load("Assets/ghost.png")
+        self.sun = pygame.transform.scale(pygame.image.load("Assets/sun.png"), (100, 100))
+        self.credit_img = pygame.image.load("Assets/credits.png")
         self.credit_rect = pygame.Rect(-3, -40, 120, 90)
         self.img_small = pygame.transform.scale(self.img, (50, 50))
-        self.obstacle_cactus = pygame.image.load("cactus.png")
+        self.obstacle_cactus = pygame.image.load("Assets/cactus.png")
         self.scroll = 0
 
     def initialize(self):
         win = pygame.display.set_mode((self.window_width, self.window_height))
         pygame.display.set_caption(self.caption)
-        pygame.display.set_icon(pygame.image.load("ghost.png"))
+        pygame.display.set_icon(pygame.image.load("Assets/ghost.png"))
         return win
 
     def check_for_close(self):
@@ -52,7 +52,7 @@ class Krekhead():
             action()
 
     def scroll_thingey(self):
-        background = pygame.image.load("bg.png").convert_alpha()
+        background = pygame.image.load("Assets/bg.png").convert_alpha()
         bg_width = background.get_width()
         tiles = math.ceil((self.window_width / bg_width)) + 1
 
@@ -82,25 +82,27 @@ class Screens():
 
 
     def DiedScreen(self):
+        mixer.Sound("Assets/game_over.wav")
+        mixer.music.play()
         win.fill((0, 0, 0))
         self.loop_thingey()
         
-        win.blit(krek.text_render("Minecraft.ttf", 100, "YOU DIED", (255,255,255)), (450, 150))
-        win.blit(krek.text_render("Slowdex.ttf", 50, f"Score : {player.score}", (255,255,255)), (585, 250))
-        krek.create_button(465, 340, 250, 75, (255,255,255), "krek.ttf", (0,200,0), "Restart", (0,0,0), restart)
-        krek.create_button(715, 340, 250, 75, (255,255,255), "krek.ttf", (0,200,0), "Quit", (0,0,0), lambda : sys.exit())
-        krek.create_button(568, 415, 300, 75, (255,255,255), "krek.ttf", (0,200,0), "Main Menu", (0,0,0),  menu)
+        win.blit(krek.text_render("Assets/Minecraft.ttf", 100, "YOU DIED", (255,255,255)), (450, 150))
+        win.blit(krek.text_render("Assets/Slowdex.ttf", 50, f"Score : {player.score}", (255,255,255)), (585, 250))
+        krek.create_button(465, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Restart", (0,0,0), restart)
+        krek.create_button(715, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Quit", (0,0,0), lambda : sys.exit())
+        krek.create_button(568, 415, 300, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Main Menu", (0,0,0),  menu)
 
     def MainMenu(self):
-        mixer.music.load('bg_music.mp3')
+        mixer.music.load('Assets/bg_music.mp3')
         mixer.music.play(1)
         win.fill((0, 0, 0))
         pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
         win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
-        win.blit(krek.text_render("Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
-        krek.create_button(400, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, start)
-        krek.create_button(600, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, lambda: 5 + 1)
-        krek.create_button(800, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Quit", BLACK, lambda: sys.exit())
+        win.blit(krek.text_render("Assets/Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
+        krek.create_button(400, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, start)
+        krek.create_button(600, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, lambda: 5 + 1)
+        krek.create_button(800, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Quit", BLACK, lambda: sys.exit())
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -111,11 +113,14 @@ class Screens():
     def GameLoop(self):
         player.score += 0.1
         player.score = round(player.score, 1)
-        player.move_obstacles()
+        if player.score >= 200:
+            player.move_obstacles(20)
+        else:
+            player.move_obstacles()
         clock.tick(FPS)
         krek.scroll_thingey()
         win.blit(krek.sun.convert_alpha(), (100, 50))
-        win.blit(krek.text_render('Slowdex.ttf', 25, f"SCORE : {player.score}", (0, 0, 0)), (600, 5))
+        win.blit(krek.text_render('Assets/Slowdex.ttf', 25, f"SCORE : {player.score}", (0, 0, 0)), (600, 5))
 
         player.draw(win)
         player.draw_obstacles(win)
@@ -151,7 +156,7 @@ class Screens():
         elif player.move_right and player.x < krek.window_width - 60:
             player.move(player.steps, 0)
         if player.isJump:
-            mixer.music.load("jump1.mp3")
+            mixer.music.load("Assets/jump1.mp3")
             mixer.music.play()
             player.jump()
 
@@ -203,9 +208,9 @@ class Krek():
         obstacle_rect = pygame.Rect(x, y, 35, 60)
         return obstacle_rect
 
-    def move_obstacles(self):
+    def move_obstacles(self, value = 10):
         for i in self.obstacles:
-            i.x -= 10
+            i.x -= value
 
     def draw_obstacles(self, win):
         for i in self.obstacles:
