@@ -36,8 +36,8 @@ class Krekhead():
                 return False
         return True
 
-    def create_button(self, x, y, width, height, def_color, hover_color, text, text_color, action=False):
-        font = pygame.font.Font("Slowdex.ttf", 35)
+    def create_button(self, x, y, width, height, def_color,textfont, hover_color, text, text_color, action=False):
+        font = pygame.font.Font(textfont, 35)
         button_rect = pygame.Rect(x, y, width, height)
         button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else def_color
 
@@ -70,7 +70,95 @@ class Krekhead():
 
 class Screens():
     def __init__(self):
-        pass
+        self.main_menu = True
+        self.gameplay = False
+        self.died = False
+        self.options = False
+    
+    def loop_thingey(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+
+    def DiedScreen(self):
+        win.fill((0, 0, 0))
+        self.loop_thingey()
+        
+        win.blit(krek.text_render("Minecraft.ttf", 100, "YOU DIED", (255,255,255)), (450, 150))
+        win.blit(krek.text_render("Slowdex.ttf", 50, f"Score : {player.score}", (255,255,255)), (585, 250))
+        krek.create_button(465, 340, 250, 75, (255,255,255), "krek.ttf", (0,200,0), "Restart", (0,0,0), restart)
+        krek.create_button(715, 340, 250, 75, (255,255,255), "krek.ttf", (0,200,0), "Quit", (0,0,0), lambda : sys.exit())
+        krek.create_button(568, 415, 300, 75, (255,255,255), "krek.ttf", (0,200,0), "Main Menu", (0,0,0),  menu)
+
+    def MainMenu(self):
+        mixer.music.load('bg_music.mp3')
+        mixer.music.play(1)
+        win.fill((0, 0, 0))
+        pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
+        win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
+        win.blit(krek.text_render("Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
+        krek.create_button(400, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, start)
+        krek.create_button(600, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, lambda: 5 + 1)
+        krek.create_button(800, 375, 200, 100, (0, 255, 0), "Slowdex.ttf" ,(255, 0, 0), "Quit", BLACK, lambda: sys.exit())
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if krek.credit_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed:
+                    webbrowser.open("https://github.com/DanyalAbbas")
+    def GameLoop(self):
+        player.score += 0.1
+        player.score = round(player.score, 1)
+        player.move_obstacles()
+        clock.tick(FPS)
+        krek.scroll_thingey()
+        win.blit(krek.sun.convert_alpha(), (100, 50))
+        win.blit(krek.text_render('Slowdex.ttf', 25, f"SCORE : {player.score}", (0, 0, 0)), (600, 5))
+
+        player.draw(win)
+        player.draw_obstacles(win)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    player.move_left = True
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    player.move_right = True
+                elif event.key == pygame.K_SPACE:
+                    player.isJump = True
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+                    player.move_left = False
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+                    player.move_right = False
+                elif event.key == pygame.K_SPACE:
+                    pass
+
+        collision = player.is_collision()
+        if collision:
+            screen.gameplay = False
+            screen.main_menu = False
+            screen.died = True
+
+        if player.move_left and player.x > 10:
+            player.move(-player.steps, 0)
+        elif player.move_right and player.x < krek.window_width - 60:
+            player.move(player.steps, 0)
+        if player.isJump:
+            mixer.music.load("jump1.mp3")
+            mixer.music.play()
+            player.jump()
+
+        if random.randint(0, 320) < 5:
+            player.obstacles.append(player.create_obstacle())
+
+        player.obstacles = [obstacle for obstacle in player.obstacles if obstacle.x > -40]
 
 
 class Krek():
@@ -110,7 +198,7 @@ class Krek():
             self.jump_velocity = self.jump_height
 
     def create_obstacle(self):
-        x = random.randint(900, 1400)
+        x = random.randint(1400, 2000)
         y = 560
         obstacle_rect = pygame.Rect(x, y, 35, 60)
         return obstacle_rect
@@ -134,89 +222,48 @@ class Krek():
 # DIFFERENT SCREENS
 
 def start():
-    global gameplay
-    gameplay = True
-    return gameplay
+    screen.gameplay = True
+    return screen.gameplay
+
+def menu():
+    screen.main_menu = True
+    return screen.main_menu
+
+def restart():
+    player.score = 0
+    player.x = 250
+    player.move_right = False
+    player.move_right = False
+    player.isJump = False
+    player.obstacles.clear()
+    screen.gameplay = True
+    
+    return screen.gameplay
 
 
-mixer.music.load('bg_music.mp3')
-mixer.music.play(-1)
+
 
 krek = Krekhead()
 player = Krek(krek.main_x, krek.main_y, 250, 550)
+screen = Screens()
 win = krek.initialize()
 clock = pygame.time.Clock()
 FPS = 60
+
+
 run = True
-gameplay = False
-
 while run:
-    if gameplay:
-        player.score += 0.1
-        player.score = round(player.score, 1)
-        player.move_obstacles()
-        clock.tick(FPS)
-        krek.scroll_thingey()
-        win.blit(krek.sun.convert_alpha(), (100, 50))
-        win.blit(krek.text_render('Slowdex.ttf', 25, f"SCORE : {player.score}", (0, 255, 0), (0, 0, 0)), (600, 25))
+    if screen.gameplay:
+        screen.GameLoop()
+        
 
-        player.draw(win)
-        player.draw_obstacles(win)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    player.move_left = True
-                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    player.move_right = True
-                elif event.key == pygame.K_SPACE:
-                    player.isJump = True
-
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                    player.move_left = False
-                elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                    player.move_right = False
-                elif event.key == pygame.K_SPACE:
-                    pass
-
-        collision = player.is_collision()
-        if collision:
-            sys.exit()
-
-        if player.move_left and player.x > 10:
-            player.move(-player.steps, 0)
-        elif player.move_right and player.x < krek.window_width - 60:
-            player.move(player.steps, 0)
-        if player.isJump:
-            mixer.music.load("jump1.mp3")
-            mixer.music.play()
-            player.jump()
-
-        if random.randint(0, 300) < 5:
-            player.obstacles.append(player.create_obstacle())
-
-        player.obstacles = [obstacle for obstacle in player.obstacles if obstacle.x > -40]
-
-    else:
-        win.fill((0, 0, 0))
-        pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
-        win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
-        win.blit(krek.text_render("Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
-        krek.create_button(400, 375, 200, 100, (0, 255, 0), (255, 0, 0), "Play", BLACK, start)
-        krek.create_button(600, 375, 200, 100, (0, 255, 0), (255, 0, 0), "Options", BLACK, lambda: 5 + 1)
-        krek.create_button(800, 375, 200, 100, (0, 255, 0), (255, 0, 0), "Quit", BLACK, lambda: sys.exit())
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if krek.credit_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed:
-                    webbrowser.open("https://github.com/DanyalAbbas")
+    elif screen.main_menu:
+        screen.MainMenu()
+        
+    elif screen.died:
+        screen.DiedScreen()
 
     pygame.display.flip()
+
 
 pygame.quit()
