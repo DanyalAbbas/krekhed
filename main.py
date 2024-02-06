@@ -83,14 +83,71 @@ class Screens():
         self.died = False
         self.options = False
         self.died_music = mixer.Sound("Assets/game_over.wav")
+        self.colors_rgb = [
+        (255, 0, 0),     # Red
+        (0, 255, 0),     # Green
+        (0, 0, 255),     # Blue
+        (255, 255, 0),   # Yellow
+        (255, 0, 255),   # Magenta
+        (0, 255, 255),   # Cyan
+        (128, 0, 0),     # Maroon
+        (0, 128, 0),     # Olive
+        (0, 0, 128),     # Navy
+        (128, 128, 128),  # Gray
+        (255, 165, 0),   # Orange
+        (0, 128, 128),   # Teal
+        (128, 0, 128),   # Purple
+        (128, 128, 0),   # Olive
+        (70, 130, 180),   # Steel Blue
+        (255, 99, 71),    # Tomato
+        (0, 139, 139),    # Dark Cyan
+        (218, 112, 214),  # Orchid
+        (255, 192, 203),  # Pink
+        (173, 216, 230),  # Light Blue
+        (240, 128, 128),  # Light Coral
+        (152, 251, 152),  # Pale Green
+        (255, 215, 0),    # Gold
+        (255, 20, 147),   # Deep Pink
+        (0, 255, 127),    # Spring Green
+        (255, 69, 0),     # Red-Orange
+        (0, 250, 154),    # Medium Spring Green
+        (128, 0, 0),      # Dark Red
+        (255, 218, 185),  # Peach
+        (210, 105, 30),   # Chocolate
+        (255, 250, 205),  # LemonChiffon
+        (255, 192, 203),  # Pink
+        (0, 191, 255),    # Deep Sky Blue
+        (138, 43, 226),   # Blue Violet
+        (255, 228, 196),  # Bisque
+        (255, 140, 0),    # Dark Orange
+        (0, 0, 139),      # Dark Blue
+        (32, 178, 170),   # Light Sea Green
+        (186, 85, 211),   # Medium Orchid
+        (255, 182, 193),  # Light Pink
+        (255, 255, 240),  # Ivory
+        (0, 128, 0)       # Green
+]
+
 
     # Different button functions that will be called when certain buttons are pressed
     def start_btn_func(self):
-        screen.gameplay = True
-        return screen.gameplay
+        self.died = False
+        self.options = False
+        self.main_menu = False
+        self.gameplay = True
+        return self.gameplay
     def menu_btn_func(self):
-        screen.main_menu = True
-        return screen.main_menu
+        self.main_menu = True
+        player.score = 0
+        player.x = 250
+        player.move_right = False
+        player.move_right = False
+        player.isJump = False
+        player.obstacles.clear()
+        self.died = False
+        self.gameplay = False
+        self.options = False
+        return self.main_menu
     def restart_btn_func(self):
         player.score = 0
         player.x = 250
@@ -98,10 +155,21 @@ class Screens():
         player.move_right = False
         player.isJump = False
         player.obstacles.clear()
-        screen.gameplay = True   
+        self.died = False
+        self.options = False
+        self.main_menu = False
+        self.gameplay = True   
         return screen.gameplay
-      
+    def option_btn_func(self):
+        self.options = True
+        self.main_menu = False
+        self.died = False
+        self.gameplay = False
+        return self.options
 
+
+      
+    # The screen that will be shown when the player collides with any obstacle
     def DiedScreen(self):
         win.fill((0, 0, 0))
         for event in pygame.event.get():
@@ -114,13 +182,14 @@ class Screens():
         krek.create_button(715, 340, 250, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Quit", (0,0,0), lambda : sys.exit())
         krek.create_button(568, 415, 300, 75, (255,255,255), "Assets/krek.ttf", (0,200,0), "Main Menu", (0,0,0),  self.menu_btn_func)
 
+    # The Main Menu screen that will shown when the user launches the game
     def MainMenu(self):
         win.fill((0, 0, 0))
         pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
         win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
         win.blit(krek.text_render("Assets/Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
         krek.create_button(400, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, self.start_btn_func)
-        krek.create_button(600, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, lambda: 5 + 1)
+        krek.create_button(600, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Options", BLACK, self.option_btn_func)
         krek.create_button(800, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Quit", BLACK, lambda: sys.exit())
 
         for event in pygame.event.get():
@@ -129,11 +198,35 @@ class Screens():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if krek.credit_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed:
                     webbrowser.open("https://github.com/DanyalAbbas")
+    
+    def OptionsScreen(self):
+        win.fill((0, 0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+        
+        krek.create_button(30, 10, 100, 50, (0, 0, 0), "Assets/Stella.otf" ,(0, 200, 0), "< Back", (255,255,255), self.menu_btn_func)
+        win.blit(krek.text_render("Assets/Stella.otf", 50,"Choose your colour", (255,255,255)), (120,75))
+        for pos,i in enumerate(self.colors_rgb):
+            krek.create_button(120+(pos*25) if pos <= 10 else (-155+(pos*25) if pos > 10 and pos <=20 else (-405+(pos*25) if pos > 20 and pos <=30 else (1+2))), 120 if pos <= 10 else (145 if pos > 10 and pos <= 20 else (170 if pos > 20 and pos <= 30 else(1+2))), 25, 25, i ,"Assets/Stella.otf" , (255,255,255),"",(0,0,0) ,lambda: player.color.append(i))
+        # krek.create_button(120, 120, 25, 25, (255, 0, 0), "Assets/Stella.otf" ,(205 ,0 ,0), "", (255,255,255), lambda: self.rect_colour.append((255 ,0 ,0)) )
+        # krek.create_button(145, 120, 25, 25, (0 ,255 ,0), "Assets/Stella.otf" ,(0 ,205 ,0), "", (255,255,255), lambda: self.rect_colour.append((0 ,255 ,0)) )
+        # krek.create_button(170, 120, 25, 25, (0 ,0 ,255), "Assets/Stella.otf" ,(0 ,0 ,205), "", (255,255,255), lambda: self.rect_colour.append((0 ,0 ,255)) )
+        # krek.create_button(195, 120, 25, 25, (255, 102, 255), "Assets/Stella.otf" ,(255, 50, 255), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
+        # krek.create_button(220, 120, 25, 25, (255, 102, 54), "Assets/Stella.otf" ,(255, 150, 54), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
+        # krek.create_button(245, 120, 25, 25, (255, 210, 0), "Assets/Stella.otf" ,(255, 165, 0), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
+        # krek.create_button(270, 120, 25, 25, (255, 102, 255), "Assets/Stella.otf" ,(255, 50, 255), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
+
+        
+
+
+
+    # The screen that will be when the user presses "Play" Button
     def GameLoop(self):
         player.score += 0.1
         player.score = round(player.score, 1)
         if player.score >= 200:
-            player.move_obstacles(20)
+            player.move_obstacles(15)
         else:
             player.move_obstacles()
         clock.tick(FPS)
@@ -192,7 +285,7 @@ class Krek():
         self.y = y + main_y
         self.width = 50
         self.height = 50
-        self.color = (255, 255, 0)
+        self.color = [(200,0,0)]
         self.score = 0
         self.jump_height = 20
         self.jump_velocity = self.jump_height
@@ -209,7 +302,7 @@ class Krek():
 
     def draw(self, win):
         rect = self.create_character()
-        pygame.draw.rect(win, self.color, rect)
+        pygame.draw.rect(win, self.color[-1], rect)
 
     def move(self, x, y):
         self.x += x
@@ -244,8 +337,6 @@ class Krek():
         return False
 
 
-# DIFFERENT SCREENS
-
 
 
 # Creating instances for the different Classes
@@ -259,12 +350,15 @@ FPS = 60
 # The Main window loop for the program to keep running
 run = True
 while run:
-    if screen.gameplay:
+    if screen.options:
+        screen.OptionsScreen()
+    elif screen.gameplay:
         screen.GameLoop()
     elif screen.main_menu:
         screen.MainMenu()  
     elif screen.died:
         screen.DiedScreen()
+    
 
     """ for updating the screen after one iteration so that the
         changes that occur in the iteration are shown on the screen

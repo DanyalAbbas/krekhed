@@ -1,26 +1,63 @@
-# import pygame
-# pygame.init()
+import pygame
+pygame.init()
 
-# win = pygame.display.set_mode((500,500))
-# pygame.display.set_caption("First Game")
+screen = pygame.display.set_mode((500,500))
+pygame.display.set_caption("First Game")
 
-# x = 50
-# y = 50
-# width = 40
-# height = 60
-# vel = 5
+x = 50
+y = 50
+width = 40
+height = 60
+vel = 5
 
-# isJump = False
-# jumpCount = 10
+BLACK, WHITE, GRAY, HOVER_COLOR = (0, 0, 0), (255, 255, 255), (0, 255, 0), (255, 0, 0)
+font = pygame.font.Font("Slowdex.ttf", 25)
+def create_button(x, y, width, height, text, default_color, hover_color, text_color, action):
+    button_rect = pygame.Rect(x, y, width, height)
+    button_color = hover_color if button_rect.collidepoint(pygame.mouse.get_pos()) else default_color
 
-# run = True
+    pygame.draw.rect(screen, button_color, button_rect)
+    pygame.draw.rect(screen, BLACK, button_rect, 2)
 
-# while run:
-#     pygame.time.delay(100)
+    button_text = font.render(text, True, text_color)
+    text_rect = button_text.get_rect(center=button_rect.center)
+    screen.blit(button_text, text_rect)
 
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             run = False
+    if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+        action()
+isJump = False
+jumpCount = 10
+
+run = True
+colour = [
+    (255, 0, 0),    # Red
+    (0, 255, 0),    # Green
+    (0, 0, 255),    # Blue
+    (255, 255, 0),  # Yellow
+    (255, 0, 255),  # Magenta
+    (0, 255, 255),  # Cyan
+    (128, 0, 0),    # Maroon
+    (0, 128, 0),    # Olive
+    (0, 0, 128),    # Navy
+    (128, 128, 128) # Gray
+]
+l = []
+while run:
+  screen.fill((0,0,0))
+  for pos,i in enumerate(colour):
+      create_button(120+(pos*25), 120, 25, 25, "" ,i , (255,255,255), (0,0,0), lambda: l.append(i))
+  
+  if len(l):
+      screen.fill(l[0])
+  create_button(250,250,50,50,"touch me", (0,200,0), (0,175,0), (255,255,255), lambda : l.append((0,200,0)))
+
+  for event in pygame.event.get():
+      if event.type == pygame.QUIT:
+          run = False
+
+  pygame.display.flip()
+pygame.quit()
+
 
 #     keys = pygame.key.get_pressed()
     
@@ -147,68 +184,68 @@
 
 
 
-import pygame
+# import pygame
 
-pygame.init()
+# pygame.init()
 
-#define screen size
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+# #define screen size
+# SCREEN_WIDTH = 800
+# SCREEN_HEIGHT = 600
 
-#create game window
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Masks")
+# #create game window
+# screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# pygame.display.set_caption("Masks")
 
-#define colours
-BG = (0, 0, 0)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-WHITE = (255, 255, 255)
+# #define colours
+# BG = (0, 0, 0)
+# GREEN = (0, 255, 0)
+# RED = (255, 0, 0)
+# BLUE = (0, 0, 255)
+# WHITE = (255, 255, 255)
 
-#hide mouse cursor
-pygame.mouse.set_visible(False)
+# #hide mouse cursor
+# pygame.mouse.set_visible(False)
 
-#create soldier
-soldier = pygame.image.load("cactus.png").convert_alpha()
-soldier_rect = soldier.get_rect()
-soldier_mask = pygame.mask.from_surface(soldier)
-mask_image = soldier_mask.to_surface()
+# #create soldier
+# soldier = pygame.image.load("cactus.png").convert_alpha()
+# soldier_rect = soldier.get_rect()
+# soldier_mask = pygame.mask.from_surface(soldier)
+# mask_image = soldier_mask.to_surface()
 
-#create bullet and mask
-bullet = pygame.Surface((10, 10))
-bullet.fill(RED)
-bullet_mask = pygame.mask.from_surface(bullet)
+# #create bullet and mask
+# bullet = pygame.Surface((10, 10))
+# bullet.fill(RED)
+# bullet_mask = pygame.mask.from_surface(bullet)
 
-#game loop
-run = True
-while run:
+# #game loop
+# run = True
+# while run:
 
-  #get mouse coordinates
-  pos = pygame.mouse.get_pos()
+#   #get mouse coordinates
+#   pos = pygame.mouse.get_pos()
 
-  #update background
-  screen.fill(BG)
+#   #update background
+#   screen.fill(BG)
 
-  #check mask overlap
-  if soldier_mask.overlap(bullet_mask, (pos[0], pos[1])):
-    col = RED
-  else:
-    col = GREEN
+#   #check mask overlap
+#   if soldier_mask.overlap(bullet_mask, (pos[0], pos[1])):
+#     col = RED
+#   else:
+#     col = GREEN
 
-  #draw mask image
-  screen.blit(mask_image, (0, 0))
+#   #draw mask image
+#   screen.blit(mask_image, (0, 0))
 
-  #draw rectangle
-  bullet.fill(col)
-  screen.blit(bullet, pos)
+#   #draw rectangle
+#   bullet.fill(col)
+#   screen.blit(bullet, pos)
 
-  #event handler
-  for event in pygame.event.get():
-    if event.type == pygame.QUIT:
-      run = False
+#   #event handler
+#   for event in pygame.event.get():
+#     if event.type == pygame.QUIT:
+#       run = False
 
-  #update display
-  pygame.display.flip()
+#   #update display
+#   pygame.display.flip()
 
-pygame.quit()
+# pygame.quit()
