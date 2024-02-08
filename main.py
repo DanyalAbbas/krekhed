@@ -1,5 +1,5 @@
 # Name : Danyal Abbas
-# Roll no : N/A
+# Roll no : 78359
 # Email: gamingindustry9@gmail.com
 # ----------------------------------- # 
 
@@ -28,13 +28,14 @@ class Krekhead():
         self.window_width = 1400
         self.window_height = 600
         self.caption = "KREKHED"
+        self.theme = [(0,0,0)]
         self.img = pygame.image.load("Assets/ghost.png")
         self.sun = pygame.transform.scale(pygame.image.load("Assets/sun.png"), (100, 100))
         self.credit_img = pygame.image.load("Assets/credits.png")
         self.credit_rect = pygame.Rect(-3, -40, 120, 90)
         self.img_small = pygame.transform.scale(self.img, (50, 50))
-        self.obstacle_cactus = pygame.image.load("Assets/cactus.png")
         self.scroll = 0
+        self.click_sound = mixer.Sound("Assets/click.mp3") 
 
     # Implementing the values and giving the window its width, height, image and icon
     def initialize(self):
@@ -57,8 +58,10 @@ class Krekhead():
         win.blit(button_text, text_rect)
 
         if button_rect.collidepoint(pygame.mouse.get_pos()) and pygame.mouse.get_pressed()[0]:
+            self.click_sound.play()
             action()
-
+    
+    # Method to handle background scrolling
     def scroll_thingey(self):
         background = pygame.image.load("Assets/bg.png").convert_alpha()
         bg_width = background.get_width()
@@ -70,6 +73,7 @@ class Krekhead():
         if abs(self.scroll) > bg_width:
             self.scroll = 0
 
+    # Method to render text
     def text_render(self, font, size, text, color, bg_color=None):
         f = pygame.font.Font(font, size)
         write = f.render(text, True, color, bg_color)
@@ -171,7 +175,7 @@ class Screens():
       
     # The screen that will be shown when the player collides with any obstacle
     def DiedScreen(self):
-        win.fill((0, 0, 0))
+        win.fill(krek.theme[-1])
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
@@ -184,8 +188,8 @@ class Screens():
 
     # The Main Menu screen that will shown when the user launches the game
     def MainMenu(self):
-        win.fill((0, 0, 0))
-        pygame.draw.rect(win, (0, 0, 0), krek.credit_rect)
+        win.fill(krek.theme[-1])
+        pygame.draw.rect(win, krek.theme[-1], krek.credit_rect)
         win.blit(pygame.transform.scale(krek.credit_img, (150, 150)), (-3, -40))
         win.blit(krek.text_render("Assets/Minecraft.ttf", 170, "KREKHED", (255, 255, 255)), (300, 175))
         krek.create_button(400, 375, 200, 100, (0, 255, 0), "Assets/Slowdex.ttf" ,(255, 0, 0), "Play", BLACK, self.start_btn_func)
@@ -200,23 +204,17 @@ class Screens():
                     webbrowser.open("https://github.com/DanyalAbbas")
     
     def OptionsScreen(self):
-        win.fill((0, 0, 0))
+        win.fill(krek.theme[-1])
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-        
-        krek.create_button(30, 10, 100, 50, (0, 0, 0), "Assets/Stella.otf" ,(0, 200, 0), "< Back", (255,255,255), self.menu_btn_func)
-        win.blit(krek.text_render("Assets/Stella.otf", 50,"Choose your colour", (255,255,255)), (120,75))
+        krek.create_button(30, 10, 100, 50, krek.theme[-1], "Assets/Stella.otf" ,(0, 200, 0), "< Back", (255,255,255), self.menu_btn_func)
+        win.blit(krek.text_render("Assets/Stella.otf", 50,"Choose your colour", (255,255,255)), (450+120,65))
         for pos,i in enumerate(self.colors_rgb):
-            krek.create_button(120+(pos*25) if pos <= 10 else (-155+(pos*25) if pos > 10 and pos <=20 else (-405+(pos*25) if pos > 20 and pos <=30 else (1+2))), 120 if pos <= 10 else (145 if pos > 10 and pos <= 20 else (170 if pos > 20 and pos <= 30 else(1+2))), 25, 25, i ,"Assets/Stella.otf" , (255,255,255),"",(0,0,0) ,lambda: player.color.append(i))
-        # krek.create_button(120, 120, 25, 25, (255, 0, 0), "Assets/Stella.otf" ,(205 ,0 ,0), "", (255,255,255), lambda: self.rect_colour.append((255 ,0 ,0)) )
-        # krek.create_button(145, 120, 25, 25, (0 ,255 ,0), "Assets/Stella.otf" ,(0 ,205 ,0), "", (255,255,255), lambda: self.rect_colour.append((0 ,255 ,0)) )
-        # krek.create_button(170, 120, 25, 25, (0 ,0 ,255), "Assets/Stella.otf" ,(0 ,0 ,205), "", (255,255,255), lambda: self.rect_colour.append((0 ,0 ,255)) )
-        # krek.create_button(195, 120, 25, 25, (255, 102, 255), "Assets/Stella.otf" ,(255, 50, 255), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
-        # krek.create_button(220, 120, 25, 25, (255, 102, 54), "Assets/Stella.otf" ,(255, 150, 54), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
-        # krek.create_button(245, 120, 25, 25, (255, 210, 0), "Assets/Stella.otf" ,(255, 165, 0), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
-        # krek.create_button(270, 120, 25, 25, (255, 102, 255), "Assets/Stella.otf" ,(255, 50, 255), "", (255,255,255), lambda: self.rect_colour.append((225 ,0 ,0)) )
-
+            krek.create_button(450+120+(pos*25) if pos <= 10 else (450+(-155)+(pos*25) if pos > 10 and pos <=20 else (450+(-405)+(pos*25) if pos > 20 and pos <=30 else (1+2))), 120 if pos <= 10 else (145 if pos > 10 and pos <= 20 else (170 if pos > 20 and pos <= 30 else(5000))), 25, 25, i ,"Assets/Stella.otf" , (255,255,255),"",(0,0,0) ,lambda: player.color.append(i))
+        win.blit(krek.text_render("Assets/Stella.otf", 50,"Choose the colour theme of the game", (255,255,255)), (450,250))
+        for pos,i in enumerate(self.colors_rgb):
+            krek.create_button(450+120+(pos*25) if pos <= 10 else (450+(-155)+(pos*25) if pos > 10 and pos <=20 else (450+(-405)+(pos*25) if pos > 20 and pos <=30 else (1+2))), 310 if pos <= 10 else (335 if pos > 10 and pos <= 20 else (360 if pos > 20 and pos <= 30 else(5000))), 25, 25, i ,"Assets/Stella.otf" , (255,255,255),"",(0,0,0) ,lambda: krek.theme.append(i))
         
 
 
@@ -257,8 +255,7 @@ class Screens():
                 elif event.key == pygame.K_SPACE:
                     pass
 
-        collision = player.is_collision()
-        if collision:
+        if player.is_collision():
             screen.gameplay = False
             screen.main_menu = False
             screen.died_music.play()
@@ -277,7 +274,6 @@ class Screens():
             player.obstacles.append(player.create_obstacle())
 
         player.obstacles = [obstacle for obstacle in player.obstacles if obstacle.x > -40]
-
 # Making a Class for the player and enemy and everything to do with their movements, bliting, creation etc
 class Krek():
     def __init__(self, main_x, main_y, x, y):
@@ -288,13 +284,14 @@ class Krek():
         self.color = [(200,0,0)]
         self.score = 0
         self.jump_height = 20
+        self.gravity = 2
         self.jump_velocity = self.jump_height
         self.move_left = False
         self.move_right = False
         self.isJump = False
         self.steps = 6
         self.obstacles = []
-        self.gravity = 2
+        
 
     def create_character(self):
         rect = pygame.Rect(self.x, self.y, self.width, self.height)
