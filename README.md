@@ -17,3 +17,6 @@ Inspired by the classic Chrome Dino game, Krekhed takes you on a thrilling, pixe
 
 ## Snapshots:
 <a href="https://imgur.com/8zi8f6c"><img src="https://i.imgur.com/8zi8f6c.jpg" title="source: imgur.com" /></a>
+<a href="https://imgur.com/BCfcn71"><img src="https://i.imgur.com/BCfcn71.jpg" title="source: imgur.com" /></a>
+<a href="https://imgur.com/uKLF9M2"><img src="https://i.imgur.com/uKLF9M2.jpg" title="source: imgur.com" /></a>
+<a href="https://imgur.com/tEoTKHP"><img src="https://i.imgur.com/tEoTKHP.jpg" title="source: imgur.com" /></a>
