@@ -15,4 +15,6 @@ Inspired by the classic Chrome Dino game, Krekhed takes you on a thrilling, pixe
 
 **Ready to test your dinosaur dash skills? Dive into Krekhed and see how far you can go!**
 
-## Snapshots
+## Snapshots:
+![Snapshot 1](C:/Users/LimerSion/Desktop/docs things/1.jpg)
+
